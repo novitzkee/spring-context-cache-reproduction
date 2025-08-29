@@ -1,0 +1,1 @@
+Repository containing error reproduction related to problematic [DefaultCacheAwareContextLoaderDelegate](https://github.com/spring-projects/spring-framework/blob/main/spring-test/src/main/java/org/springframework/test/context/cache/DefaultCacheAwareContextLoaderDelegate.java) behavior.
