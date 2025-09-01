@@ -1,17 +1,16 @@
 package org.novitzkee;
 
+import java.util.Properties;
+
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.tool.schema.Action;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.hibernate.HibernateTransactionManager;
+import org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
-import java.util.Properties;
 
 @Configuration
 public class PersistenceTestConfiguration {
@@ -34,24 +33,18 @@ public class PersistenceTestConfiguration {
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
+    public LocalSessionFactoryBean sessionFactory() {
         final Properties hibernateProperties = new Properties();
+        hibernateProperties.setProperty(AvailableSettings.DRIVER, org.h2.Driver.class.getName());
+        hibernateProperties.setProperty(AvailableSettings.URL, H2_JDBC_URL);
+        hibernateProperties.setProperty(AvailableSettings.USER, H2_JDBC_USER);
+        hibernateProperties.setProperty(AvailableSettings.PASS, "");
         hibernateProperties.setProperty(AvailableSettings.HBM2DDL_AUTO, Action.CREATE_DROP.getExternalHbm2ddlName());
 
         final LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource);
+        sessionFactory.setDataSource(new BasicDataSource());
         sessionFactory.setPackagesToScan(PACKAGE_TO_SCAN);
         sessionFactory.setHibernateProperties(hibernateProperties);
         return sessionFactory;
-    }
-
-    @Bean
-    DataSource h2DataSource() {
-        final BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setDriverClassName(org.h2.Driver.class.getName());
-        basicDataSource.setUsername(H2_JDBC_USER);
-        basicDataSource.setPassword("");
-        basicDataSource.setUrl(H2_JDBC_URL);
-        return basicDataSource;
     }
 }
